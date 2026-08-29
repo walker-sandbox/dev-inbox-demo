@@ -1,0 +1,19 @@
+name: Demo Merge
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number to squash-merge as the Actions bot
+        default: "2"
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Squash-merge the pull request
+        run: gh pr merge "${{ inputs.pr }}" --squash --delete-branch
