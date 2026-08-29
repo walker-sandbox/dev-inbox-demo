@@ -1,0 +1,14 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: |
+          echo "Running test suite..."
+          node -e "const assert=require('assert'); assert.strictEqual(require('./src/sum.js')(2,2), 5, 'sum(2,2) should equal 4');"

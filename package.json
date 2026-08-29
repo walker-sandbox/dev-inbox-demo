@@ -1,0 +1,9 @@
+{
+  "name": "dev-inbox-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo repository used by the mermail-dev-inbox skill to exercise GitHub notification triage.",
+  "main": "src/sum.js",
+  "scripts": { "test": "node -e \"require('assert').strictEqual(require('./src/sum.js')(2,2),4)\"" },
+  "dependencies": { "lodash": "4.17.15", "minimist": "1.2.0" }
+}
