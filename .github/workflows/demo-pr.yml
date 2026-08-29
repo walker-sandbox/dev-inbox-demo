@@ -2,35 +2,23 @@ name: Demo PR
 on:
   workflow_dispatch:
     inputs:
+      pr:
+        description: Existing pull request number to request review on
+        default: "1"
       reviewer:
         description: GitHub login to request review from and mention
         default: WNZhao
 permissions:
-  contents: write
   pull-requests: write
+  issues: write
 jobs:
-  open-pr:
+  request-review:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Create branch with a fix
+      - name: Request review and mention reviewer
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          BR="fix/sum-assertion-$(date +%s)"
-          git switch -c "$BR"
-          sed -i 's/(2,2), 5,/(2,2), 4,/' .github/workflows/ci.yml
-          git diff --stat
-          git commit -am "fix(ci): correct the sum assertion so the test suite passes"
-          git push -u origin "$BR"
-          echo "BR=$BR" >> "$GITHUB_ENV"
-      - name: Open PR, request review, mention reviewer
-        run: |
-          PR_URL=$(gh pr create --base main --head "$BR" \
-            --title "fix(ci): correct the sum assertion" \
-            --body "The CI job asserted that sum(2,2) equals 5. This fixes the assertion so the suite passes.\n\nOpened automatically for the mermail-dev-inbox demo.")
-          echo "PR: $PR_URL"
-          gh pr edit "$PR_URL" --add-reviewer "${{ inputs.reviewer }}" || echo "review request failed (non-fatal)"
-          gh pr comment "$PR_URL" --body "@${{ inputs.reviewer }} could you take a look when you have a minute? This unblocks the failing CI on main."
+          gh pr edit "${{ inputs.pr }}" --add-reviewer "${{ inputs.reviewer }}" || echo "review request failed (non-fatal)"
+          gh pr comment "${{ inputs.pr }}" --body "@${{ inputs.reviewer }} could you take a look when you have a minute? This dependency bump unblocks the security alert on main."
