@@ -8,6 +8,12 @@ on:
       reviewer:
         description: GitHub login to request review from and mention
         default: WNZhao
+      body:
+        description: Optional comment body override (mention is prepended)
+        default: ""
+      request_review:
+        description: Whether to request a review
+        default: "true"
 permissions:
   pull-requests: write
   issues: write
@@ -20,5 +26,7 @@ jobs:
     steps:
       - name: Request review and mention reviewer
         run: |
-          gh pr edit "${{ inputs.pr }}" --add-reviewer "${{ inputs.reviewer }}" || echo "review request failed (non-fatal)"
-          gh pr comment "${{ inputs.pr }}" --body "@${{ inputs.reviewer }} could you take a look when you have a minute? This dependency bump unblocks the security alert on main."
+          if [ "${{ inputs.request_review }}" = "true" ]; then gh pr edit "${{ inputs.pr }}" --add-reviewer "${{ inputs.reviewer }}" || echo "review request failed (non-fatal)"; fi
+          BODY="${{ inputs.body }}"
+          if [ -z "$BODY" ]; then BODY="could you take a look when you have a minute? This dependency bump unblocks the security alert on main."; fi
+          gh pr comment "${{ inputs.pr }}" --body "@${{ inputs.reviewer }} $BODY"
