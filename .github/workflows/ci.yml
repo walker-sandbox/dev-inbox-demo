@@ -11,4 +11,4 @@ jobs:
       - name: Run tests
         run: |
           echo "Running test suite..."
-          node -e "const assert=require('assert'); assert.strictEqual(require('./src/sum.js')(2,2), 5, 'sum(2,2) should equal 4');"
+          node -e "const assert=require('assert'); assert.strictEqual(require('./src/sum.js')(2,2), 4, 'sum(2,2) should equal 4');"
