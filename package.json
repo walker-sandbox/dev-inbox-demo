@@ -4,6 +4,12 @@
   "private": true,
   "description": "Demo repository used by the mermail-dev-inbox skill to exercise GitHub notification triage.",
   "main": "src/sum.js",
-  "scripts": { "test": "node -e \"require('assert').strictEqual(require('./src/sum.js')(2,2),4)\"" },
-  "dependencies": { "lodash": "4.18.1", "minimist": "1.2.6" }
+  "scripts": {
+    "test": "node -e \"require('assert').strictEqual(require('./src/sum.js')(2,2),4)\""
+  },
+  "dependencies": {
+    "lodash": "4.18.1",
+    "minimist": "1.2.6",
+    "axios": "0.21.0"
+  }
 }
