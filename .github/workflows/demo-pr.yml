@@ -1,0 +1,35 @@
+name: Demo PR
+on:
+  workflow_dispatch:
+    inputs:
+      reviewer:
+        description: GitHub login to request review from and mention
+        default: WNZhao
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create branch with a fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BR="fix/sum-assertion-$(date +%s)"
+          git switch -c "$BR"
+          sed -i 's/assert.strictEqual(require(.\/src\/sum.js.)(2,2), 5/assert.strictEqual(require(".\/src\/sum.js")(2,2), 4/' .github/workflows/ci.yml
+          git commit -am "fix(ci): correct the sum assertion so the test suite passes"
+          git push -u origin "$BR"
+          echo "BR=$BR" >> "$GITHUB_ENV"
+      - name: Open PR, request review, mention reviewer
+        run: |
+          PR_URL=$(gh pr create --base main --head "$BR" \
+            --title "fix(ci): correct the sum assertion" \
+            --body "The CI job asserted that sum(2,2) equals 5. This fixes the assertion so the suite passes.\n\nOpened automatically for the mermail-dev-inbox demo.")
+          echo "PR: $PR_URL"
+          gh pr edit "$PR_URL" --add-reviewer "${{ inputs.reviewer }}" || echo "review request failed (non-fatal)"
+          gh pr comment "$PR_URL" --body "@${{ inputs.reviewer }} could you take a look when you have a minute? This unblocks the failing CI on main."
